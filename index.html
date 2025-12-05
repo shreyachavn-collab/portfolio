@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio — Shreya Chavan</title>
+    <meta name="description" content="Personal portfolio — About, Resume, Education, Experience, Projects, Social links." />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Glass effect */
+      .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(6px); }
+      .section-pad { padding: 4rem 1rem; }
+
+      /* Animations */
+      @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+
+      @keyframes floatUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(40px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
+        50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+      }
+
+      @keyframes bounce-subtle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      /* Apply animations */
+      .animate-gradient {
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+      }
+
+      .animate-float {
+        animation: floatUp 0.8s ease-out;
+      }
+
+      .animate-glow {
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
+
+      .hover-lift {
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+      }
+
+      .nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: #6366f1;
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .card-hover {
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-hover::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+      }
+
+      .card-hover:hover::before {
+        left: 100%;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(99, 102, 241, 0.4);
+      }
+
+      .btn-animated {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .btn-animated::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.2);
+        transition: left 0.5s;
+      }
+
+      .btn-animated:hover::before {
+        left: 100%;
+      }
+
+      .btn-animated:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+      }
+
+      .fade-in-stagger > * {
+        animation: floatUp 0.6s ease-out backwards;
+      }
+
+      .fade-in-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+      .fade-in-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+      .fade-in-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+      .fade-in-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+
+      .section-underline {
+        position: relative;
+        display: inline-block;
+        padding-bottom: 8px;
+      }
+
+      .section-underline::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        border-radius: 2px;
+      }
+
+      .text-gradient {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .spin-slow {
+        animation: spin 8s linear infinite;
+      }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Border animation on hover */
+      .border-animate {
+        position: relative;
+      }
+
+      .border-animate::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid transparent;
+        border-image: linear-gradient(45deg, #6366f1, #8b5cf6, #ec4899) 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .border-animate:hover::after {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100 leading-relaxed">
+    <header class="fixed w-full z-50 bg-transparent">
+      <nav class="max-w-5xl mx-auto flex items-center justify-between p-4">
+        <a href="#hero" class="text-2xl font-semibold text-gradient">Shreya Chavan</a>
+        <div class="hidden md:flex gap-8 items-center text-sm">
+          <a href="#about" class="nav-link hover:text-indigo-400">About</a>
+          <a href="#resume" class="nav-link hover:text-indigo-400">Resume</a>
+          <a href="#education" class="nav-link hover:text-indigo-400">Education</a>
+          <a href="#experience" class="nav-link hover:text-indigo-400">Experience</a>
+          <a href="#projects" class="nav-link hover:text-indigo-400">Projects</a>
+          <a href="#social" class="nav-link hover:text-indigo-400">Social</a>
+          <a href="admin.html" class="px-3 py-2 bg-indigo-600 rounded hover:bg-indigo-500 btn-animated">Admin</a>
+        </div>
+        <button id="nav-toggle" class="md:hidden px-2 py-1 border rounded glass hover-lift">Menu</button>
+      </nav>
+      <div id="mobile-nav" class="hidden bg-gray-800/50 glass md:hidden">
+        <div class="flex flex-col p-4 gap-2">
+          <a href="#about">About</a>
+          <a href="#resume">Resume</a>
+          <a href="#education">Education</a>
+          <a href="#experience">Experience</a>
+          <a href="#projects">Projects</a>
+          <a href="#social">Social</a>
+          <a href="admin.html">Admin</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="pt-20">
+      <section id="hero" class="section-pad flex items-center justify-center min-h-[56vh] relative">
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-center px-4">
+          <div class="animate__animated" data-animate="animate__fadeInLeft">
+            <h1 class="text-4xl md:text-5xl font-bold text-gradient animate-float">Hi — I'm Shreya Chavan</h1>
+            <p class="mt-4 text-gray-300 max-w-xl animate__animated animate__fadeInUp animate__delay-1s">Data Science enthusiast with a passion for analyzing data and building intelligent solutions. Currently pursuing MSc in Data Science while leveraging my BSc in Computer Science background.</p>
+            <div class="mt-6 flex gap-3 fade-in-stagger">
+              <a href="#projects" class="px-4 py-2 bg-indigo-600 rounded hover-lift btn-animated">See projects</a>
+              <a href="resume.html" class="px-4 py-2 border rounded hover-lift btn-animated">View resume</a>
+            </div>
+          </div>
+          <div class="flex justify-center md:justify-end">
+            <div id="heroPhoto" class="w-56 h-56 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center animate__animated overflow-hidden card-hover animate-glow" data-animate="animate__zoomIn">
+              <img id="photoImg" src="" alt="Profile" class="w-full h-full object-cover" style="display:none;" />
+              <span id="photoPlaceholder" class="text-2xl font-semibold">Photo</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section-pad bg-gray-800/20">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl font-semibold mb-4 section-underline">About Me</h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 animate__animated card-hover" data-animate="animate__fadeInUp">
+              <p class="text-gray-300 animate-float">I'm Shreya Chavan, a data science enthusiast with a strong foundation in computer science. I'm passionate about transforming raw data into actionable insights and building intelligent systems. Currently pursuing MSc in Data Science, expanding my expertise in machine learning, statistical analysis, and data visualization.</p>
+              <ul class="mt-4 space-y-2 text-sm text-gray-400 fade-in-stagger">
+                <li class="hover-lift transition-all"><strong>Education:</strong> BSc Computer Science (Completed) | MSc Data Science (In Progress)</li>
+                <li class="hover-lift transition-all"><strong>Focus Areas:</strong> Machine Learning, Data Analysis, Python, SQL</li>
+                <li class="hover-lift transition-all"><strong>Interests:</strong> AI, Big Data, Predictive Analytics, Data Visualization</li>
+              </ul>
+            </div>
+            <div class="flex flex-col gap-3 items-start fade-in-stagger">
+              <a href="resume.html" class="px-4 py-2 border rounded hover-lift btn-animated transition-all">Open full resume</a>
+              <a href="#projects" class="px-4 py-2 bg-green-600 rounded hover-lift btn-animated transition-all">View projects</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="resume" class="section-pad">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl font-semibold mb-4">Resume</h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="md:col-span-2 animate__animated" data-animate="animate__fadeInLeft">
+              <div id="resumeTextContainer" class="text-gray-300">Loading resume...</div>
+            </div>
+            <div class="flex flex-col gap-3 items-start">
+              <button id="openResumeBtn" class="px-4 py-2 border rounded">Open resume</button>
+              <a id="downloadResume" class="px-4 py-2 bg-indigo-600 rounded hidden">Download (PDF)</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="education" class="section-pad bg-gray-800/10">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl font-semibold mb-6 section-underline">Education</h2>
+          <div class="space-y-4 fade-in-stagger" id="educationList">
+            <p class="text-gray-400 text-center py-8">No education added yet. <a href="admin.html" class="text-indigo-400 hover:underline">Add from admin panel</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" class="section-pad">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl font-semibold mb-6 section-underline">Work Experience</h2>
+          <div class="space-y-4 fade-in-stagger" id="experienceList">
+            <p class="text-gray-400 text-center py-8">No experience added yet. <a href="admin.html" class="text-indigo-400 hover:underline">Add from admin panel</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="section-pad bg-gray-800/10">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl font-semibold mb-6 section-underline">Projects</h2>
+          <div class="grid md:grid-cols-2 gap-6" id="projectsList">
+            <p class="col-span-full text-gray-400 text-center py-8">No projects added yet. <a href="admin.html" class="text-indigo-400 hover:underline">Add from admin panel</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="social" class="section-pad">
+        <div class="max-w-5xl mx-auto px-4">
+          <h2 class="text-2xl font-semibold mb-4">Social</h2>
+          <div class="flex flex-wrap gap-3 items-center">
+            <a href="#" class="px-3 py-2 border rounded">GitHub</a>
+            <a href="#" class="px-3 py-2 border rounded">LinkedIn</a>
+            <a href="#" class="px-3 py-2 border rounded">Twitter</a>
+            <a href="#" class="px-3 py-2 border rounded">Instagram</a>
+            <a href="#" class="px-3 py-2 border rounded">Email</a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="py-8">
+        <div class="max-w-5xl mx-auto px-4 text-center text-gray-500 text-sm">© "Your Name" — Built with Tailwind + Animate.css</div>
+      </footer>
+    </main>
+
+    <script src="main.js"></script>
+    <script>
+      // Load all portfolio data from localStorage
+      document.addEventListener('DOMContentLoaded', function () {
+        // Load profile photo
+        const aboutData = JSON.parse(localStorage.getItem('aboutData') || '{}');
+        if (aboutData.photo) {
+          document.getElementById('photoImg').src = aboutData.photo;
+          document.getElementById('photoImg').style.display = 'block';
+          document.getElementById('photoPlaceholder').style.display = 'none';
+        }
+
+        // Load Education
+        const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+        if (educations.length > 0) {
+          const eduSection = document.getElementById('education');
+          const eduList = eduSection.querySelector('.fade-in-stagger');
+          eduList.innerHTML = '';
+          educations.forEach((edu, idx) => {
+            const div = document.createElement('div');
+            div.className = 'p-4 glass rounded animate__animated card-hover border-animate';
+            div.setAttribute('data-animate', 'animate__fadeInUp');
+            div.style.animationDelay = (idx * 0.2) + 's';
+            div.innerHTML = `
+              <h3 class="font-semibold text-indigo-400">${edu.degree}</h3>
+              <p class="text-sm text-gray-400">${edu.institution}</p>
+              <p class="text-xs text-gray-500">${edu.year}</p>
+              <p class="mt-2 text-gray-300">${edu.details}</p>
+            `;
+            eduList.appendChild(div);
+          });
+        }
+
+        // Load Experience
+        const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+        if (experiences.length > 0) {
+          const expSection = document.getElementById('experience');
+          const expList = expSection.querySelector('.fade-in-stagger');
+          expList.innerHTML = '';
+          experiences.forEach((exp, idx) => {
+            const div = document.createElement('div');
+            div.className = 'p-4 glass rounded animate__animated card-hover border-animate';
+            div.setAttribute('data-animate', idx % 2 === 0 ? 'animate__fadeInLeft' : 'animate__fadeInRight');
+            div.style.animationDelay = (idx * 0.2) + 's';
+            div.innerHTML = `
+              <h3 class="font-semibold text-indigo-400">${exp.title} — ${exp.company}</h3>
+              <p class="text-sm text-gray-400">${exp.duration}</p>
+              <ul class="mt-2 text-gray-300 list-disc list-inside space-y-1">
+                <li>${exp.description}</li>
+              </ul>
+            `;
+            expList.appendChild(div);
+          });
+        }
+
+        // Load Projects
+        const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+        if (projects.length > 0) {
+          const projSection = document.getElementById('projects');
+          const projList = projSection.querySelector('.grid');
+          projList.innerHTML = '';
+          projects.forEach((proj, idx) => {
+            const article = document.createElement('article');
+            article.className = 'p-4 glass rounded animate__animated card-hover border-animate';
+            article.setAttribute('data-animate', 'animate__fadeInUp');
+            article.style.animationDelay = (idx * 0.2) + 's';
+            article.innerHTML = `
+              <h3 class="font-semibold text-indigo-400">${proj.name}</h3>
+              <p class="text-gray-300 text-sm mt-2">${proj.description}</p>
+              <div class="mt-3 flex gap-2">
+                ${proj.live ? `<a class="text-sm px-3 py-1 bg-indigo-600 rounded hover-lift btn-animated" href="${proj.live}" target="_blank">Live</a>` : ''}
+                ${proj.github ? `<a class="text-sm px-3 py-1 border rounded hover-lift btn-animated" href="${proj.github}" target="_blank">Code</a>` : ''}
+              </div>
+            `;
+            projList.appendChild(article);
+          });
+        }
+
+        // Load Social Links
+        const socialData = JSON.parse(localStorage.getItem('socialData') || '{}');
+        if (Object.keys(socialData).length > 0) {
+          const socialSection = document.getElementById('social');
+          const socialLinks = socialSection.querySelector('.flex');
+          socialLinks.innerHTML = '';
+          
+          if (socialData.github) socialLinks.appendChild(createSocialLink('GitHub', socialData.github));
+          if (socialData.linkedin) socialLinks.appendChild(createSocialLink('LinkedIn', socialData.linkedin));
+          if (socialData.twitter) socialLinks.appendChild(createSocialLink('Twitter', socialData.twitter));
+          if (socialData.instagram) socialLinks.appendChild(createSocialLink('Instagram', socialData.instagram));
+          if (socialData.email) socialLinks.appendChild(createSocialLink('Email', 'mailto:' + socialData.email));
+        }
+
+        // Load Resume (text + optional PDF uploaded via Admin)
+        const resumeData = JSON.parse(localStorage.getItem('resumeData') || '{}');
+        const resumeTextContainer = document.getElementById('resumeTextContainer');
+        const openBtn = document.getElementById('openResumeBtn');
+        const downloadA = document.getElementById('downloadResume');
+
+        if (resumeData && (resumeData.text || resumeData.pdf)) {
+          // Render resume text if present
+          if (resumeData.text) {
+            // break into paragraphs on double-newlines
+            const paragraphs = resumeData.text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+            resumeTextContainer.innerHTML = paragraphs.map(p => `<p class="mt-2">${p.replace(/\n/g, '<br/>')}</p>`).join('');
+          } else {
+            resumeTextContainer.innerHTML = '<p class="text-gray-400">No resume text saved. Add one from the <a href="admin.html" class="text-indigo-400">Admin panel</a>.</p>';
+          }
+
+          // If PDF exists, wire up open and download
+          if (resumeData.pdf) {
+            openBtn.addEventListener('click', function () {
+              // Open PDF data URI in a new tab
+              window.open(resumeData.pdf, '_blank');
+            });
+            downloadA.href = resumeData.pdf;
+            downloadA.download = resumeData.filename || 'resume.pdf';
+            downloadA.classList.remove('hidden');
+          } else {
+            // Fallback: open the resume.html page
+            openBtn.addEventListener('click', function () { window.location.href = 'resume.html'; });
+            downloadA.classList.add('hidden');
+          }
+        } else {
+          // No resume data
+          resumeTextContainer.innerHTML = '<p class="text-gray-400">No resume saved yet. Add your resume in <a href="admin.html" class="text-indigo-400">Admin</a>.</p>';
+          openBtn.addEventListener('click', function () { window.location.href = 'admin.html'; });
+          downloadA.classList.add('hidden');
+        }
+      });
+
+      function createSocialLink(label, url) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'flex items-center gap-2 px-3 py-2 border rounded hover:bg-indigo-600 transition-colors';
+        a.setAttribute('aria-label', label);
+
+        const icons = {
+          github: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1-.02-1.96-3.2.7-3.88-1.54-3.88-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.76.4-1.25.73-1.54-2.56-.29-5.26-1.28-5.26-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.14 1.18a10.9 10.9 0 0 1 5.72 0c2.17-1.5 3.13-1.18 3.13-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.42-2.71 5.39-5.29 5.67.41.35.77 1.04.77 2.1 0 1.52-.02 2.75-.02 3.12 0 .3.2.66.79.55A10.52 10.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>`,
+          linkedin: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.2 8.98h4.6V24H.2V8.98zM8.98 8.98h4.41v2.05h.06c.61-1.16 2.1-2.38 4.32-2.38 4.62 0 5.47 3.04 5.47 6.99V24h-4.6v-7.5c0-1.79-.03-4.09-2.49-4.09-2.49 0-2.87 1.94-2.87 3.96V24H8.98V8.98z"/></svg>`,
+          twitter: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M23 4.56c-.77.35-1.6.58-2.46.69a4.25 4.25 0 0 0 1.86-2.35 8.48 8.48 0 0 1-2.7 1.03 4.24 4.24 0 0 0-7.22 3.86A12.02 12.02 0 0 1 3.15 3.15a4.24 4.24 0 0 0 1.31 5.66 4.19 4.19 0 0 1-1.92-.53v.05a4.24 4.24 0 0 0 3.4 4.16 4.27 4.27 0 0 1-1.91.07 4.25 4.25 0 0 0 3.96 2.95A8.5 8.5 0 0 1 1 19.54a12 12 0 0 0 6.5 1.9c7.8 0 12.07-6.46 12.07-12.07v-.55A8.6 8.6 0 0 0 23 4.56z"/></svg>`,
+          instagram: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm8.5 3.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z"/></svg>`,
+          email: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`
+        };
+
+        const key = label.toLowerCase();
+        const svg = icons[key] || '';
+        a.innerHTML = svg + `<span class="hidden sm:inline text-sm">${label}</span>`;
+        return a;
+      }
+    </script>
+  </body>
+</html>

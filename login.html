@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full p-6 bg-gray-800 rounded shadow">
+      <h1 class="text-2xl font-semibold mb-4">Admin — Login / Setup</h1>
+
+      <div id="already" class="mb-4 text-sm text-green-300 hidden">You are already logged in. <a href="admin.html" class="text-indigo-300 underline">Go to Admin</a></div>
+
+      <div id="setup" class="space-y-3">
+        <p class="text-sm text-gray-300">It looks like no admin account exists. Create a username and password to secure the Admin panel.</p>
+        <input id="setupUser" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600" placeholder="Choose username" />
+        <input id="setupPass" type="password" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600" placeholder="Choose password" />
+        <div class="flex gap-2">
+          <button id="setupBtn" class="px-4 py-2 bg-green-600 rounded">Create Account</button>
+          <button id="toLogin" class="px-4 py-2 bg-gray-700 rounded">Already have account</button>
+        </div>
+      </div>
+
+      <div id="login" class="space-y-3 hidden">
+        <p class="text-sm text-gray-300">Enter your admin credentials to continue.</p>
+        <input id="loginUser" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600" placeholder="Username" />
+        <input id="loginPass" type="password" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600" placeholder="Password" />
+        <div class="flex gap-2">
+          <button id="loginBtn" class="px-4 py-2 bg-indigo-600 rounded">Login</button>
+          <button id="toSetup" class="px-4 py-2 bg-gray-700 rounded">Create account</button>
+        </div>
+      </div>
+
+      <p id="msg" class="mt-4 text-sm text-red-400"></p>
+      <p class="mt-4 text-xs text-gray-500">Note: This is client-side protection using localStorage. It's suitable for local usage only.</p>
+    </div>
+
+    <script>
+      // helpers
+      function bufToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        const chunkSize = 0x8000;
+        let binary = '';
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        return btoa(binary);
+      }
+
+      async function hashPass(password) {
+        const enc = new TextEncoder();
+        const data = enc.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        return bufToBase64(hashBuffer);
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        const creds = JSON.parse(localStorage.getItem('adminCreds') || '{}');
+        const isAuth = localStorage.getItem('adminAuth') === 'true';
+        const setupEl = document.getElementById('setup');
+        const loginEl = document.getElementById('login');
+        const msg = document.getElementById('msg');
+        const already = document.getElementById('already');
+
+        if (isAuth) {
+          already.classList.remove('hidden');
+          setupEl.classList.add('hidden');
+          loginEl.classList.add('hidden');
+          return;
+        }
+
+        if (creds && creds.username) {
+          // show login
+          setupEl.classList.add('hidden');
+          loginEl.classList.remove('hidden');
+        } else {
+          setupEl.classList.remove('hidden');
+          loginEl.classList.add('hidden');
+        }
+
+        document.getElementById('toLogin').addEventListener('click', () => {
+          setupEl.classList.add('hidden');
+          loginEl.classList.remove('hidden');
+        });
+        document.getElementById('toSetup').addEventListener('click', () => {
+          setupEl.classList.remove('hidden');
+          loginEl.classList.add('hidden');
+        });
+
+        document.getElementById('setupBtn').addEventListener('click', async () => {
+          msg.textContent = '';
+          const u = document.getElementById('setupUser').value.trim();
+          const p = document.getElementById('setupPass').value;
+          if (!u || !p) { msg.textContent = 'Please fill username and password.'; return; }
+          const h = await hashPass(p);
+          localStorage.setItem('adminCreds', JSON.stringify({ username: u, passwordHash: h }));
+          // mark authenticated then go to admin
+          localStorage.setItem('adminAuth', 'true');
+          window.location.href = 'admin.html';
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+          msg.textContent = '';
+          const u = document.getElementById('loginUser').value.trim();
+          const p = document.getElementById('loginPass').value;
+          const stored = JSON.parse(localStorage.getItem('adminCreds') || '{}');
+          if (!stored.username) { msg.textContent = 'No admin account found. Create one.'; return; }
+          const h = await hashPass(p);
+          if (u === stored.username && h === stored.passwordHash) {
+            localStorage.setItem('adminAuth', 'true');
+            window.location.href = 'admin.html';
+          } else {
+            msg.textContent = 'Invalid username or password.';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

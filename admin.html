@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Panel — Portfolio Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(6px); }
+      .entry-item { transition: all 0.3s ease; }
+      .entry-item:hover { background: rgba(99, 102, 241, 0.1); }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-gray-100">
+    <header class="fixed w-full z-50 bg-gray-800/50 glass">
+      <nav class="max-w-6xl mx-auto flex items-center justify-between p-4">
+        <h1 class="text-2xl font-semibold">Admin Panel</h1>
+        <div class="flex items-center gap-2">
+          <a href="index.html" class="px-3 py-2 border rounded hover:bg-gray-700">Back to Portfolio</a>
+          <button onclick="logoutAdmin()" class="px-3 py-2 bg-red-600 rounded hover:bg-red-500 text-sm">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="pt-20 max-w-6xl mx-auto p-4">
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Sidebar Navigation -->
+        <aside class="md:col-span-1">
+          <div class="glass rounded p-4 sticky top-24">
+            <h2 class="font-semibold mb-4">Sections</h2>
+            <nav class="flex flex-col gap-2 text-sm">
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="about">About Me</button>
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="education">Education</button>
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="experience">Experience</button>
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="projects">Projects</button>
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="resume">Resume</button>
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="social">Social Links</button>
+              <button class="tab-btn px-3 py-2 rounded hover:bg-gray-700 text-left" data-tab="settings">Settings</button>
+            </nav>
+          </div>
+
+          <!-- Resume Tab -->
+          <div id="resume" class="tab-content hidden glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">Resume</h2>
+
+            <div class="mb-6 p-4 bg-gray-800 rounded border border-gray-700">
+              <h3 class="font-semibold mb-3">Edit Resume Text</h3>
+              <form class="space-y-3">
+                <textarea id="resumeText" rows="8" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" placeholder="Paste your resume text or summary here..."></textarea>
+                <div>
+                  <label class="block text-sm mb-1">Upload PDF (optional)</label>
+                  <input type="file" id="resumePdfUpload" accept="application/pdf" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700 text-sm" />
+                  <div id="resumePdfPreview" class="mt-3 text-sm text-gray-300"></div>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button" class="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500" onclick="saveResume()">Save Resume</button>
+                  <button type="button" class="px-4 py-2 bg-red-600 rounded hover:bg-red-500" onclick="clearResume()">Clear Resume</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <section class="md:col-span-2 space-y-6">
+          <!-- About Tab -->
+          <div id="about" class="tab-content glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">About Me</h2>
+            <form class="space-y-4">
+              <div>
+                <label class="block text-sm mb-1">Full Name</label>
+                <input type="text" id="fullName" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="Your Name" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Title / Role</label>
+                <input type="text" id="title" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="e.g., Frontend Developer" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Bio</label>
+                <textarea id="bio" rows="5" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="Write your bio..."></textarea>
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Location</label>
+                <input type="text" id="location" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="City, Country" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Profile Photo</label>
+                <div class="space-y-2">
+                  <input type="file" id="photoUpload" accept="image/*" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700 text-sm" />
+                  <div id="photoPreview" class="mt-3"></div>
+                </div>
+              </div>
+              <button type="button" class="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500" onclick="saveAbout()">Save About</button>
+            </form>
+          </div>
+
+          <!-- Education Tab -->
+          <div id="education" class="tab-content hidden glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">Education</h2>
+            
+            <!-- Add New Education -->
+            <div class="mb-6 p-4 bg-gray-800 rounded border border-gray-700">
+              <h3 class="font-semibold mb-3">Add New Education</h3>
+              <form class="space-y-3" id="eduForm">
+                <input type="text" placeholder="Degree (e.g., M.Sc. Data Science)" id="eduDegree" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <input type="text" placeholder="Institution" id="eduInstitution" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <input type="text" placeholder="Year (e.g., 2021-2023)" id="eduYear" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <textarea placeholder="Details" id="eduDetails" rows="2" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"></textarea>
+                <button type="button" class="px-3 py-2 bg-green-600 rounded hover:bg-green-500 text-sm" onclick="addEducation()">+ Add Education</button>
+              </form>
+            </div>
+
+            <!-- Education List -->
+            <div id="educationList" class="space-y-2"></div>
+          </div>
+
+          <!-- Experience Tab -->
+          <div id="experience" class="tab-content hidden glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">Work Experience</h2>
+            
+            <!-- Add New Experience -->
+            <div class="mb-6 p-4 bg-gray-800 rounded border border-gray-700">
+              <h3 class="font-semibold mb-3">Add New Experience</h3>
+              <form class="space-y-3" id="expForm">
+                <input type="text" placeholder="Job Title" id="expTitle" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <input type="text" placeholder="Company" id="expCompany" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <input type="text" placeholder="Duration (e.g., 2021-Present)" id="expDuration" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <textarea placeholder="Description" id="expDescription" rows="2" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"></textarea>
+                <button type="button" class="px-3 py-2 bg-green-600 rounded hover:bg-green-500 text-sm" onclick="addExperience()">+ Add Experience</button>
+              </form>
+            </div>
+
+            <!-- Experience List -->
+            <div id="experienceList" class="space-y-2"></div>
+          </div>
+
+          <!-- Projects Tab -->
+          <div id="projects" class="tab-content hidden glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">Projects</h2>
+            
+            <!-- Add New Project -->
+            <div class="mb-6 p-4 bg-gray-800 rounded border border-gray-700">
+              <h3 class="font-semibold mb-3">Add New Project</h3>
+              <form class="space-y-3" id="projForm">
+                <input type="text" placeholder="Project Name" id="projName" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <textarea placeholder="Description" id="projDescription" rows="2" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm"></textarea>
+                <input type="url" placeholder="Live Link" id="projLive" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <input type="url" placeholder="GitHub Link" id="projGithub" class="w-full px-3 py-2 bg-gray-700 rounded border border-gray-600 text-sm" />
+                <button type="button" class="px-3 py-2 bg-green-600 rounded hover:bg-green-500 text-sm" onclick="addProject()">+ Add Project</button>
+              </form>
+            </div>
+
+            <!-- Projects List -->
+            <div id="projectsList" class="space-y-2"></div>
+          </div>
+
+          <!-- Social Links Tab -->
+          <div id="social" class="tab-content hidden glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">Social Media Links</h2>
+            <form class="space-y-4" id="socialForm">
+              <div>
+                <label class="block text-sm mb-1">GitHub</label>
+                <input type="url" id="github" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="https://github.com/yourname" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">LinkedIn</label>
+                <input type="url" id="linkedin" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="https://linkedin.com/in/yourname" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Twitter</label>
+                <input type="url" id="twitter" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="https://twitter.com/yourname" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Instagram</label>
+                <input type="url" id="instagram" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="https://instagram.com/yourname" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Email</label>
+                <input type="email" id="email" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="your@email.com" />
+              </div>
+              <button type="button" class="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-500" onclick="saveSocial()">Save Social Links</button>
+            </form>
+          </div>
+
+          <!-- Settings Tab -->
+          <div id="settings" class="tab-content hidden glass rounded p-6">
+            <h2 class="text-xl font-semibold mb-4">Settings</h2>
+            <form class="space-y-4">
+              <div>
+                <label class="block text-sm mb-1">Portfolio Title</label>
+                <input type="text" id="siteTitle" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="Portfolio — Your Name" />
+              </div>
+              <div>
+                <label class="block text-sm mb-1">Footer Text</label>
+                <input type="text" id="footerText" class="w-full px-3 py-2 bg-gray-800 rounded border border-gray-700" placeholder="© Your Name — Built with Tailwind + Animate.css" />
+              </div>
+              <button type="button" class="px-4 py-2 bg-green-600 rounded hover:bg-green-500" onclick="saveSettings()">Save Settings</button>
+              <button type="button" class="px-4 py-2 bg-red-600 rounded hover:bg-red-500 ml-2" onclick="clearAllData()">Clear All Data</button>
+            </form>
+          </div>
+        </section>
+      </div>
+
+      <!-- Data Display / Debug -->
+      <section class="mt-8 glass rounded p-6">
+        <h2 class="text-lg font-semibold mb-4">Stored Data (LocalStorage Preview)</h2>
+        <pre id="dataPreview" class="bg-gray-800 p-4 rounded text-xs overflow-auto max-h-64"></pre>
+        <button type="button" class="mt-4 px-4 py-2 bg-gray-700 rounded hover:bg-gray-600" onclick="refreshDataPreview()">Refresh Preview</button>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

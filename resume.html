@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Resume — Your Name</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-900">
+    <main class="max-w-3xl mx-auto p-8">
+      <header class="flex items-start justify-between mb-6">
+        <div>
+          <h1 id="resName" class="text-3xl font-bold">Your Name</h1>
+          <p id="resMeta" class="text-sm text-gray-600">Role • City • email@example.com</p>
+        </div>
+        <div class="text-right">
+          <a id="download" href="#" class="px-3 py-2 bg-indigo-600 text-white rounded hidden">Download PDF</a>
+        </div>
+      </header>
+
+      <section id="resContent" class="mb-6">
+        <h2 class="font-semibold">Summary</h2>
+        <p id="resSummary" class="text-gray-700">This resume will be populated from the Admin panel. Go to Admin → Resume to edit.</p>
+      </section>
+    </main>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Load aboutData if available for name/meta
+        const about = JSON.parse(localStorage.getItem('aboutData') || '{}');
+        const resume = JSON.parse(localStorage.getItem('resumeData') || '{}');
+
+        if (about.fullName) document.getElementById('resName').textContent = about.fullName;
+        if (about.title || about.location || about.email) {
+          const parts = [];
+          if (about.title) parts.push(about.title);
+          if (about.location) parts.push(about.location);
+          document.getElementById('resMeta').textContent = parts.join(' • ');
+        }
+
+        if (resume.text) {
+          // Insert the saved resume text into the content area (simple paragraph formatting)
+          const content = document.getElementById('resContent');
+          content.innerHTML = '<h2 class="font-semibold">Resume</h2>' +
+            '<div id="resumeTextRendered" class="prose prose-sm max-w-none text-gray-800 mt-2"></div>';
+          const target = document.getElementById('resumeTextRendered');
+          // simple paragraphs by splitting on double newlines
+          const paragraphs = resume.text.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+          target.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
+        }
+
+        if (resume.pdf) {
+          const download = document.getElementById('download');
+          download.href = resume.pdf;
+          download.download = resume.filename || 'resume.pdf';
+          download.classList.remove('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>
