@@ -64,3 +64,7 @@ def clear_all(request):
     PortfolioData.objects.all().delete()
     PortfolioData.objects.create()
     return JsonResponse({'success': True})
+
+
+def health(request):
+    return JsonResponse({'status': 'ok'})
