@@ -2,7 +2,7 @@
 
 const API_BASE = window.location.hostname === 'localhost' 
   ? 'http://localhost:5000/api/portfolio'
-  : 'https://portfolio-backend-xyz.onrender.com/api/portfolio'; // Update with your deployed backend URL
+  : 'https://portfolio-backend-roql.onrender.com/api/portfolio'; // Render backend URL
 
 let currentData = {};
 
