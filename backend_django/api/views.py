@@ -1,4 +1,5 @@
 import json
+import traceback
 from django.http import JsonResponse, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from .models import PortfolioData
@@ -12,19 +13,24 @@ def get_single_instance():
 
 
 def index(request):
-    data = get_single_instance()
-    resp = {
-        'about': json.loads(data.about or '{}'),
-        'educations': json.loads(data.educations or '[]'),
-        'experiences': json.loads(data.experiences or '[]'),
-        'projects': json.loads(data.projects or '[]'),
-        'social': json.loads(data.social or '{}'),
-        'resume': json.loads(data.resume or '{}'),
-        'settings': json.loads(data.settings or '{}'),
-        # datetime objects are not JSON serializable; convert to ISO string
-        'updated_at': data.updated_at.isoformat() if getattr(data, 'updated_at', None) else None,
-    }
-    return JsonResponse(resp, safe=False)
+    try:
+        data = get_single_instance()
+        resp = {
+            'about': json.loads(data.about or '{}'),
+            'educations': json.loads(data.educations or '[]'),
+            'experiences': json.loads(data.experiences or '[]'),
+            'projects': json.loads(data.projects or '[]'),
+            'social': json.loads(data.social or '{}'),
+            'resume': json.loads(data.resume or '{}'),
+            'settings': json.loads(data.settings or '{}'),
+            # datetime objects are not JSON serializable; convert to ISO string
+            'updated_at': data.updated_at.isoformat() if getattr(data, 'updated_at', None) else None,
+        }
+        return JsonResponse(resp, safe=False)
+    except Exception as e:
+        tb = traceback.format_exc()
+        # Return error and traceback to help debugging (temporary)
+        return JsonResponse({'error': str(e), 'trace': tb}, status=500)
 
 
 @csrf_exempt
