@@ -77,7 +77,18 @@ async function loadAllData() {
   try {
     const response = await fetch(API_BASE);
     if (!response.ok) throw new Error('Failed to fetch data');
-    currentData = await response.json();
+    const resp = await response.json();
+
+    // Normalize backend keys to match frontend expectations
+    currentData = {
+      aboutData: resp.about || resp.aboutData || {},
+      educations: resp.educations || resp.education || [],
+      experiences: resp.experiences || [],
+      projects: resp.projects || [],
+      socialData: resp.social || resp.socialData || {},
+      resumeData: resp.resume || resp.resumeData || {},
+      settingsData: resp.settings || resp.settingsData || {},
+    };
     
     loadAbout();
     loadResume();
@@ -112,7 +123,7 @@ async function saveAbout() {
   };
 
   try {
-    const response = await fetch(`${API_BASE}/about`, {
+    const response = await fetch(`${API_BASE}/update/about/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -164,7 +175,7 @@ async function addEducation() {
   const educations = [...(currentData.educations || []), newEntry];
 
   try {
-    const response = await fetch(`${API_BASE}/education`, {
+    const response = await fetch(`${API_BASE}/update/educations/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(educations)
@@ -192,7 +203,7 @@ function deleteEducation(index) {
     const educations = (currentData.educations || []).filter((_, i) => i !== index);
     currentData.educations = educations;
     
-    fetch(`${API_BASE}/education`, {
+    fetch(`${API_BASE}/update/educations/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(educations)
@@ -250,7 +261,7 @@ async function addExperience() {
   const experiences = [...(currentData.experiences || []), newEntry];
 
   try {
-    const response = await fetch(`${API_BASE}/experience`, {
+    const response = await fetch(`${API_BASE}/update/experiences/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(experiences)
@@ -278,7 +289,7 @@ function deleteExperience(index) {
     const experiences = (currentData.experiences || []).filter((_, i) => i !== index);
     currentData.experiences = experiences;
     
-    fetch(`${API_BASE}/experience`, {
+    fetch(`${API_BASE}/update/experiences/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(experiences)
@@ -336,7 +347,7 @@ async function addProject() {
   const projects = [...(currentData.projects || []), newEntry];
 
   try {
-    const response = await fetch(`${API_BASE}/projects`, {
+    const response = await fetch(`${API_BASE}/update/projects/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(projects)
@@ -364,7 +375,7 @@ function deleteProject(index) {
     const projects = (currentData.projects || []).filter((_, i) => i !== index);
     currentData.projects = projects;
     
-    fetch(`${API_BASE}/projects`, {
+    fetch(`${API_BASE}/update/projects/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(projects)
