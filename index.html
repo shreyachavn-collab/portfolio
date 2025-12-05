@@ -340,7 +340,11 @@
 
     <script src="main.js"></script>
     <script>
-      // Initialize with sample data if localStorage is empty (first visit)
+      const API_BASE = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5000/api/portfolio'
+        : 'https://portfolio-backend-xyz.onrender.com/api/portfolio'; // Update with your deployed backend URL
+
+      // Initialize with sample data if localStorage is empty (fallback)
       function initializeSampleData() {
         if (!localStorage.getItem('educations')) {
           const sampleEducations = [
@@ -432,19 +436,50 @@
         }
       }
 
-      // Load all portfolio data from localStorage
-      document.addEventListener('DOMContentLoaded', function () {
-        initializeSampleData();
+      // Load all portfolio data from backend or localStorage
+      document.addEventListener('DOMContentLoaded', async function () {
+        // Try to fetch from backend first
+        let backendData = null;
+        try {
+          const response = await fetch(API_BASE);
+          if (response.ok) {
+            backendData = await response.json();
+          }
+        } catch (error) {
+          console.warn('Backend unavailable, using localStorage/sample data');
+        }
+
+        // Use backend data if available, otherwise use localStorage
+        let aboutData, educations, experiences, projects, socialData, resumeData;
+
+        if (backendData) {
+          aboutData = backendData.aboutData || {};
+          educations = backendData.educations || [];
+          experiences = backendData.experiences || [];
+          projects = backendData.projects || [];
+          socialData = backendData.socialData || {};
+          resumeData = backendData.resumeData || {};
+        } else {
+          // Fallback: initialize sample data if localStorage is empty
+          initializeSampleData();
+          aboutData = JSON.parse(localStorage.getItem('aboutData') || '{}');
+          educations = JSON.parse(localStorage.getItem('educations') || '[]');
+          experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+          projects = JSON.parse(localStorage.getItem('projects') || '[]');
+          socialData = JSON.parse(localStorage.getItem('socialData') || '{}');
+          resumeData = JSON.parse(localStorage.getItem('resumeData') || '{}');
+        }
+        
         // Load profile photo
-        const aboutData = JSON.parse(localStorage.getItem('aboutData') || '{}');
+        const photoImg = document.getElementById('photoImg');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
         if (aboutData.photo) {
-          document.getElementById('photoImg').src = aboutData.photo;
-          document.getElementById('photoImg').style.display = 'block';
-          document.getElementById('photoPlaceholder').style.display = 'none';
+          photoImg.src = aboutData.photo;
+          photoImg.style.display = 'block';
+          photoPlaceholder.style.display = 'none';
         }
 
         // Load Education
-        const educations = JSON.parse(localStorage.getItem('educations') || '[]');
         if (educations.length > 0) {
           const eduSection = document.getElementById('education');
           const eduList = eduSection.querySelector('.fade-in-stagger');
@@ -465,7 +500,6 @@
         }
 
         // Load Experience
-        const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
         if (experiences.length > 0) {
           const expSection = document.getElementById('experience');
           const expList = expSection.querySelector('.fade-in-stagger');

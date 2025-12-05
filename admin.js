@@ -1,14 +1,22 @@
-// admin.js — Complete CRUD functionality for portfolio management
+// admin.js — Backend API version for portfolio management
+
+const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api/portfolio'
+  : 'https://portfolio-backend-xyz.onrender.com/api/portfolio'; // Update with your deployed backend URL
+
+let currentData = {};
 
 document.addEventListener('DOMContentLoaded', function () {
   // ---------- Authentication check ----------
   const isAuth = localStorage.getItem('adminAuth') === 'true';
   if (!isAuth) {
-    // Not authenticated — redirect to login page
     window.location.href = 'login.html';
     return;
   }
-  // ---------- end auth check ----------
+
+  // Load all data from backend on page load
+  loadAllData();
+
   // Tab switching
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
@@ -22,16 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
       this.classList.add('bg-indigo-600');
     });
   });
-
-  // Load all data on page load
-  loadAbout();
-  loadResume();
-  loadSocial();
-  loadSettings();
-  renderEducationList();
-  renderExperienceList();
-  renderProjectsList();
-  refreshDataPreview();
 
   // Photo upload listener
   const photoUpload = document.getElementById('photoUpload');
@@ -51,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Resume PDF upload listener (separate, not nested)
+  // Resume PDF upload listener
   const resumeUpload = document.getElementById('resumePdfUpload');
   if (resumeUpload) {
     resumeUpload.addEventListener('change', function (e) {
@@ -74,22 +72,66 @@ document.addEventListener('DOMContentLoaded', function () {
   if (tabBtns.length > 0) tabBtns[0].click();
 });
 
+// ============ FETCH ALL DATA FROM BACKEND ============
+async function loadAllData() {
+  try {
+    const response = await fetch(API_BASE);
+    if (!response.ok) throw new Error('Failed to fetch data');
+    currentData = await response.json();
+    
+    loadAbout();
+    loadResume();
+    loadSocial();
+    loadSettings();
+    renderEducationList();
+    renderExperienceList();
+    renderProjectsList();
+    refreshDataPreview();
+  } catch (error) {
+    console.error('Error loading data:', error);
+    console.warn('Backend not connected. Using localStorage fallback.');
+    // Fallback to localStorage
+    loadAboutLocal();
+    loadResumeLocal();
+    loadSocialLocal();
+    loadSettingsLocal();
+    renderEducationListLocal();
+    renderExperienceListLocal();
+    renderProjectsListLocal();
+  }
+}
+
 // ============ ABOUT ME ============
-function saveAbout() {
+async function saveAbout() {
   const data = {
     fullName: document.getElementById('fullName').value,
     title: document.getElementById('title').value,
     bio: document.getElementById('bio').value,
     location: document.getElementById('location').value,
-    photo: window.photoData || JSON.parse(localStorage.getItem('aboutData') || '{}').photo || null,
+    photo: window.photoData || currentData.aboutData?.photo || null,
   };
-  localStorage.setItem('aboutData', JSON.stringify(data));
-  alert('About Me saved!');
-  refreshDataPreview();
+
+  try {
+    const response = await fetch(`${API_BASE}/about`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    alert('✅ About Me saved to backend!');
+    currentData.aboutData = data;
+    refreshDataPreview();
+  } catch (error) {
+    console.error('Error saving about:', error);
+    // Fallback to localStorage
+    localStorage.setItem('aboutData', JSON.stringify(data));
+    alert('⚠️ Saved to browser storage (backend unavailable)');
+    currentData.aboutData = data;
+  }
 }
 
 function loadAbout() {
-  const data = JSON.parse(localStorage.getItem('aboutData') || '{}');
+  const data = currentData.aboutData || {};
   if (data.fullName) document.getElementById('fullName').value = data.fullName;
   if (data.title) document.getElementById('title').value = data.title;
   if (data.bio) document.getElementById('bio').value = data.bio;
@@ -100,8 +142,14 @@ function loadAbout() {
   }
 }
 
-// ============ EDUCATION (CRUD) ============
-function addEducation() {
+function loadAboutLocal() {
+  const data = JSON.parse(localStorage.getItem('aboutData') || '{}');
+  currentData.aboutData = data;
+  loadAbout();
+}
+
+// ============ EDUCATION ============
+async function addEducation() {
   const degree = document.getElementById('eduDegree').value.trim();
   const institution = document.getElementById('eduInstitution').value.trim();
   const year = document.getElementById('eduYear').value.trim();
@@ -112,57 +160,57 @@ function addEducation() {
     return;
   }
 
-  const educations = JSON.parse(localStorage.getItem('educations') || '[]');
-  const newEntry = {
-    id: Date.now(),
-    degree,
-    institution,
-    year,
-    details,
-  };
-  educations.push(newEntry);
-  localStorage.setItem('educations', JSON.stringify(educations));
+  const newEntry = { degree, institution, year, details };
+  const educations = [...(currentData.educations || []), newEntry];
 
-  // Clear form
-  document.getElementById('eduDegree').value = '';
-  document.getElementById('eduInstitution').value = '';
-  document.getElementById('eduYear').value = '';
-  document.getElementById('eduDetails').value = '';
-
-  renderEducationList();
-  refreshDataPreview();
-  alert('Education added!');
-}
-
-function editEducation(id) {
-  const educations = JSON.parse(localStorage.getItem('educations') || '[]');
-  const entry = educations.find(e => e.id === id);
-  if (entry) {
-    document.getElementById('eduDegree').value = entry.degree;
-    document.getElementById('eduInstitution').value = entry.institution;
-    document.getElementById('eduYear').value = entry.year;
-    document.getElementById('eduDetails').value = entry.details;
-    deleteEducation(id);
-    document.getElementById('eduDegree').focus();
+  try {
+    const response = await fetch(`${API_BASE}/education`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(educations)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    currentData.educations = educations;
+    document.getElementById('eduDegree').value = '';
+    document.getElementById('eduInstitution').value = '';
+    document.getElementById('eduYear').value = '';
+    document.getElementById('eduDetails').value = '';
+    renderEducationList();
+    refreshDataPreview();
+    alert('✅ Education added!');
+  } catch (error) {
+    console.error('Error adding education:', error);
+    localStorage.setItem('educations', JSON.stringify(educations));
+    alert('⚠️ Saved to browser (backend unavailable)');
+    currentData.educations = educations;
+    renderEducationList();
   }
 }
 
-function deleteEducation(id) {
+function deleteEducation(index) {
   if (confirm('Delete this education entry?')) {
-    let educations = JSON.parse(localStorage.getItem('educations') || '[]');
-    educations = educations.filter(e => e.id !== id);
-    localStorage.setItem('educations', JSON.stringify(educations));
+    const educations = (currentData.educations || []).filter((_, i) => i !== index);
+    currentData.educations = educations;
+    
+    fetch(`${API_BASE}/education`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(educations)
+    }).catch(() => {
+      localStorage.setItem('educations', JSON.stringify(educations));
+    });
+    
     renderEducationList();
     refreshDataPreview();
   }
 }
 
 function renderEducationList() {
-  const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+  const educations = currentData.educations || [];
   const list = document.getElementById('educationList');
   list.innerHTML = '';
 
-  educations.forEach(edu => {
+  educations.forEach((edu, idx) => {
     const div = document.createElement('div');
     div.className = 'entry-item p-3 bg-gray-800 rounded border border-gray-700';
     div.innerHTML = `
@@ -173,18 +221,21 @@ function renderEducationList() {
           <p class="text-xs text-gray-500">${edu.year}</p>
           <p class="text-sm text-gray-300 mt-1">${edu.details}</p>
         </div>
-        <div class="flex gap-2 ml-2">
-          <button onclick="editEducation(${edu.id})" class="px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-500">Edit</button>
-          <button onclick="deleteEducation(${edu.id})" class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-500">Delete</button>
-        </div>
+        <button onclick="deleteEducation(${idx})" class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-500">Delete</button>
       </div>
     `;
     list.appendChild(div);
   });
 }
 
-// ============ EXPERIENCE (CRUD) ============
-function addExperience() {
+function renderEducationListLocal() {
+  const educations = JSON.parse(localStorage.getItem('educations') || '[]');
+  currentData.educations = educations;
+  renderEducationList();
+}
+
+// ============ EXPERIENCE ============
+async function addExperience() {
   const title = document.getElementById('expTitle').value.trim();
   const company = document.getElementById('expCompany').value.trim();
   const duration = document.getElementById('expDuration').value.trim();
@@ -195,57 +246,57 @@ function addExperience() {
     return;
   }
 
-  const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
-  const newEntry = {
-    id: Date.now(),
-    title,
-    company,
-    duration,
-    description,
-  };
-  experiences.push(newEntry);
-  localStorage.setItem('experiences', JSON.stringify(experiences));
+  const newEntry = { title, company, duration, description };
+  const experiences = [...(currentData.experiences || []), newEntry];
 
-  // Clear form
-  document.getElementById('expTitle').value = '';
-  document.getElementById('expCompany').value = '';
-  document.getElementById('expDuration').value = '';
-  document.getElementById('expDescription').value = '';
-
-  renderExperienceList();
-  refreshDataPreview();
-  alert('Experience added!');
-}
-
-function editExperience(id) {
-  const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
-  const entry = experiences.find(e => e.id === id);
-  if (entry) {
-    document.getElementById('expTitle').value = entry.title;
-    document.getElementById('expCompany').value = entry.company;
-    document.getElementById('expDuration').value = entry.duration;
-    document.getElementById('expDescription').value = entry.description;
-    deleteExperience(id);
-    document.getElementById('expTitle').focus();
+  try {
+    const response = await fetch(`${API_BASE}/experience`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(experiences)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    currentData.experiences = experiences;
+    document.getElementById('expTitle').value = '';
+    document.getElementById('expCompany').value = '';
+    document.getElementById('expDuration').value = '';
+    document.getElementById('expDescription').value = '';
+    renderExperienceList();
+    refreshDataPreview();
+    alert('✅ Experience added!');
+  } catch (error) {
+    console.error('Error adding experience:', error);
+    localStorage.setItem('experiences', JSON.stringify(experiences));
+    alert('⚠️ Saved to browser (backend unavailable)');
+    currentData.experiences = experiences;
+    renderExperienceList();
   }
 }
 
-function deleteExperience(id) {
+function deleteExperience(index) {
   if (confirm('Delete this experience entry?')) {
-    let experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
-    experiences = experiences.filter(e => e.id !== id);
-    localStorage.setItem('experiences', JSON.stringify(experiences));
+    const experiences = (currentData.experiences || []).filter((_, i) => i !== index);
+    currentData.experiences = experiences;
+    
+    fetch(`${API_BASE}/experience`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(experiences)
+    }).catch(() => {
+      localStorage.setItem('experiences', JSON.stringify(experiences));
+    });
+    
     renderExperienceList();
     refreshDataPreview();
   }
 }
 
 function renderExperienceList() {
-  const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+  const experiences = currentData.experiences || [];
   const list = document.getElementById('experienceList');
   list.innerHTML = '';
 
-  experiences.forEach(exp => {
+  experiences.forEach((exp, idx) => {
     const div = document.createElement('div');
     div.className = 'entry-item p-3 bg-gray-800 rounded border border-gray-700';
     div.innerHTML = `
@@ -256,18 +307,21 @@ function renderExperienceList() {
           <p class="text-xs text-gray-500">${exp.duration}</p>
           <p class="text-sm text-gray-300 mt-1">${exp.description}</p>
         </div>
-        <div class="flex gap-2 ml-2">
-          <button onclick="editExperience(${exp.id})" class="px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-500">Edit</button>
-          <button onclick="deleteExperience(${exp.id})" class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-500">Delete</button>
-        </div>
+        <button onclick="deleteExperience(${idx})" class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-500">Delete</button>
       </div>
     `;
     list.appendChild(div);
   });
 }
 
-// ============ PROJECTS (CRUD) ============
-function addProject() {
+function renderExperienceListLocal() {
+  const experiences = JSON.parse(localStorage.getItem('experiences') || '[]');
+  currentData.experiences = experiences;
+  renderExperienceList();
+}
+
+// ============ PROJECTS ============
+async function addProject() {
   const name = document.getElementById('projName').value.trim();
   const description = document.getElementById('projDescription').value.trim();
   const live = document.getElementById('projLive').value.trim();
@@ -278,57 +332,57 @@ function addProject() {
     return;
   }
 
-  const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-  const newEntry = {
-    id: Date.now(),
-    name,
-    description,
-    live,
-    github,
-  };
-  projects.push(newEntry);
-  localStorage.setItem('projects', JSON.stringify(projects));
+  const newEntry = { name, description, live, github };
+  const projects = [...(currentData.projects || []), newEntry];
 
-  // Clear form
-  document.getElementById('projName').value = '';
-  document.getElementById('projDescription').value = '';
-  document.getElementById('projLive').value = '';
-  document.getElementById('projGithub').value = '';
-
-  renderProjectsList();
-  refreshDataPreview();
-  alert('Project added!');
-}
-
-function editProject(id) {
-  const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-  const entry = projects.find(p => p.id === id);
-  if (entry) {
-    document.getElementById('projName').value = entry.name;
-    document.getElementById('projDescription').value = entry.description;
-    document.getElementById('projLive').value = entry.live;
-    document.getElementById('projGithub').value = entry.github;
-    deleteProject(id);
-    document.getElementById('projName').focus();
+  try {
+    const response = await fetch(`${API_BASE}/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(projects)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    currentData.projects = projects;
+    document.getElementById('projName').value = '';
+    document.getElementById('projDescription').value = '';
+    document.getElementById('projLive').value = '';
+    document.getElementById('projGithub').value = '';
+    renderProjectsList();
+    refreshDataPreview();
+    alert('✅ Project added!');
+  } catch (error) {
+    console.error('Error adding project:', error);
+    localStorage.setItem('projects', JSON.stringify(projects));
+    alert('⚠️ Saved to browser (backend unavailable)');
+    currentData.projects = projects;
+    renderProjectsList();
   }
 }
 
-function deleteProject(id) {
+function deleteProject(index) {
   if (confirm('Delete this project?')) {
-    let projects = JSON.parse(localStorage.getItem('projects') || '[]');
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem('projects', JSON.stringify(projects));
+    const projects = (currentData.projects || []).filter((_, i) => i !== index);
+    currentData.projects = projects;
+    
+    fetch(`${API_BASE}/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(projects)
+    }).catch(() => {
+      localStorage.setItem('projects', JSON.stringify(projects));
+    });
+    
     renderProjectsList();
     refreshDataPreview();
   }
 }
 
 function renderProjectsList() {
-  const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+  const projects = currentData.projects || [];
   const list = document.getElementById('projectsList');
   list.innerHTML = '';
 
-  projects.forEach(proj => {
+  projects.forEach((proj, idx) => {
     const div = document.createElement('div');
     div.className = 'entry-item p-3 bg-gray-800 rounded border border-gray-700';
     div.innerHTML = `
@@ -341,18 +395,21 @@ function renderProjectsList() {
             ${proj.github ? `<p>Code: <a href="${proj.github}" target="_blank" class="text-blue-400 hover:underline">${proj.github}</a></p>` : ''}
           </div>
         </div>
-        <div class="flex gap-2 ml-2">
-          <button onclick="editProject(${proj.id})" class="px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-500">Edit</button>
-          <button onclick="deleteProject(${proj.id})" class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-500">Delete</button>
-        </div>
+        <button onclick="deleteProject(${idx})" class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-500">Delete</button>
       </div>
     `;
     list.appendChild(div);
   });
 }
 
+function renderProjectsListLocal() {
+  const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+  currentData.projects = projects;
+  renderProjectsList();
+}
+
 // ============ SOCIAL LINKS ============
-function saveSocial() {
+async function saveSocial() {
   const data = {
     github: document.getElementById('github').value,
     linkedin: document.getElementById('linkedin').value,
@@ -360,13 +417,27 @@ function saveSocial() {
     instagram: document.getElementById('instagram').value,
     email: document.getElementById('email').value,
   };
-  localStorage.setItem('socialData', JSON.stringify(data));
-  alert('Social links saved!');
-  refreshDataPreview();
+
+  try {
+    const response = await fetch(`${API_BASE}/social`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    alert('✅ Social links saved!');
+    currentData.socialData = data;
+    refreshDataPreview();
+  } catch (error) {
+    console.error('Error saving social:', error);
+    localStorage.setItem('socialData', JSON.stringify(data));
+    alert('⚠️ Saved to browser (backend unavailable)');
+    currentData.socialData = data;
+  }
 }
 
 function loadSocial() {
-  const data = JSON.parse(localStorage.getItem('socialData') || '{}');
+  const data = currentData.socialData || {};
   if (data.github) document.getElementById('github').value = data.github;
   if (data.linkedin) document.getElementById('linkedin').value = data.linkedin;
   if (data.twitter) document.getElementById('twitter').value = data.twitter;
@@ -374,39 +445,76 @@ function loadSocial() {
   if (data.email) document.getElementById('email').value = data.email;
 }
 
+function loadSocialLocal() {
+  const data = JSON.parse(localStorage.getItem('socialData') || '{}');
+  currentData.socialData = data;
+  loadSocial();
+}
+
 // ============ SETTINGS ============
-function saveSettings() {
+async function saveSettings() {
   const data = {
     siteTitle: document.getElementById('siteTitle').value,
     footerText: document.getElementById('footerText').value,
   };
-  localStorage.setItem('settingsData', JSON.stringify(data));
-  alert('Settings saved!');
-  refreshDataPreview();
+
+  try {
+    const response = await fetch(`${API_BASE}/settings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    alert('✅ Settings saved!');
+    currentData.siteSettings = data;
+    refreshDataPreview();
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    localStorage.setItem('settingsData', JSON.stringify(data));
+    alert('⚠️ Saved to browser (backend unavailable)');
+    currentData.siteSettings = data;
+  }
 }
 
 function loadSettings() {
-  const data = JSON.parse(localStorage.getItem('settingsData') || '{}');
+  const data = currentData.siteSettings || {};
   if (data.siteTitle) document.getElementById('siteTitle').value = data.siteTitle;
   if (data.footerText) document.getElementById('footerText').value = data.footerText;
 }
 
+function loadSettingsLocal() {
+  const data = JSON.parse(localStorage.getItem('settingsData') || '{}');
+  currentData.siteSettings = data;
+  loadSettings();
+}
+
 // ============ RESUME ============
-function saveResume() {
+async function saveResume() {
   const text = document.getElementById('resumeText').value || '';
-  const existing = JSON.parse(localStorage.getItem('resumeData') || '{}');
-  const pdf = window.resumePdfData || existing.pdf || null;
-  const filename = window.resumePdfName || existing.filename || null;
+  const pdf = window.resumePdfData || currentData.resumeData?.pdf || null;
+  const filename = window.resumePdfName || currentData.resumeData?.filename || null;
   const data = { text, pdf, filename };
-  localStorage.setItem('resumeData', JSON.stringify(data));
-  const preview = document.getElementById('resumePdfPreview');
-  if (pdf) preview.innerHTML = `<div class="text-sm">Saved PDF: ${filename}</div>`;
-  alert('Resume saved!');
-  refreshDataPreview();
+
+  try {
+    const response = await fetch(`${API_BASE}/resume`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    alert('✅ Resume saved!');
+    currentData.resumeData = data;
+    refreshDataPreview();
+  } catch (error) {
+    console.error('Error saving resume:', error);
+    localStorage.setItem('resumeData', JSON.stringify(data));
+    alert('⚠️ Saved to browser (backend unavailable)');
+    currentData.resumeData = data;
+  }
 }
 
 function loadResume() {
-  const data = JSON.parse(localStorage.getItem('resumeData') || '{}');
+  const data = currentData.resumeData || {};
   if (data.text && document.getElementById('resumeText')) document.getElementById('resumeText').value = data.text;
   if (data.pdf) {
     const preview = document.getElementById('resumePdfPreview');
@@ -416,39 +524,50 @@ function loadResume() {
   }
 }
 
+function loadResumeLocal() {
+  const data = JSON.parse(localStorage.getItem('resumeData') || '{}');
+  currentData.resumeData = data;
+  loadResume();
+}
+
 function clearResume() {
   if (!confirm('Clear saved resume?')) return;
-  localStorage.removeItem('resumeData');
+  const data = { text: '', pdf: null, filename: null };
+  
+  fetch(`${API_BASE}/resume`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(() => {
+    localStorage.removeItem('resumeData');
+  });
+  
   if (document.getElementById('resumeText')) document.getElementById('resumeText').value = '';
   const preview = document.getElementById('resumePdfPreview');
   if (preview) preview.innerHTML = '';
   window.resumePdfData = null;
   window.resumePdfName = null;
+  currentData.resumeData = {};
   refreshDataPreview();
   alert('Resume cleared');
 }
 
 // ============ UTILITIES ============
 function refreshDataPreview() {
-  const allData = {};
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    allData[key] = JSON.parse(localStorage.getItem(key) || '{}');
-  }
-  document.getElementById('dataPreview').textContent = JSON.stringify(allData, null, 2) || 'No data stored yet.';
+  document.getElementById('dataPreview').textContent = JSON.stringify(currentData, null, 2) || 'No data stored yet.';
 }
 
 function clearAllData() {
   if (confirm('Are you sure you want to clear all stored data? This cannot be undone.')) {
-    localStorage.clear();
+    fetch(`${API_BASE}`, { method: 'DELETE' }).catch(() => {
+      localStorage.clear();
+    });
     alert('All data cleared!');
     location.reload();
   }
 }
 
-// Logout helper used by admin UI
 function logoutAdmin() {
-  // Remove authentication flag and redirect to login
   localStorage.removeItem('adminAuth');
   window.location.href = 'login.html';
 }
