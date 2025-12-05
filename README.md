@@ -32,3 +32,5 @@ Want me to:
 - Add your real content (send text for About, Education, Experience)?
 - Generate a downloadable PDF resume from your provided resume text?
 - Add icons (Font Awesome) or integrate a contact form?
+
+GitHub Pages rebuild trigger: 2025-12-05T12:06:56.8237116+05:30
