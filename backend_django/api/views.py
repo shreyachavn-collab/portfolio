@@ -21,7 +21,8 @@ def index(request):
         'social': json.loads(data.social or '{}'),
         'resume': json.loads(data.resume or '{}'),
         'settings': json.loads(data.settings or '{}'),
-        'updated_at': data.updated_at,
+        # datetime objects are not JSON serializable; convert to ISO string
+        'updated_at': data.updated_at.isoformat() if getattr(data, 'updated_at', None) else None,
     }
     return JsonResponse(resp, safe=False)
 
