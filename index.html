@@ -340,8 +340,101 @@
 
     <script src="main.js"></script>
     <script>
+      // Initialize with sample data if localStorage is empty (first visit)
+      function initializeSampleData() {
+        if (!localStorage.getItem('educations')) {
+          const sampleEducations = [
+            {
+              degree: "MSc Data Science",
+              institution: "University",
+              year: "2023-Present",
+              details: "Specializing in machine learning and statistical analysis. Coursework includes advanced algorithms, deep learning, and data engineering."
+            },
+            {
+              degree: "BSc Computer Science",
+              institution: "University",
+              year: "2020-2023",
+              details: "Comprehensive foundation in computer science with focus on programming, databases, and data structures."
+            }
+          ];
+          localStorage.setItem('educations', JSON.stringify(sampleEducations));
+        }
+
+        if (!localStorage.getItem('experiences')) {
+          const sampleExperiences = [
+            {
+              title: "Data Science Intern",
+              company: "Tech Company",
+              duration: "2023-Present",
+              description: "Working on machine learning models and data analysis projects. Building predictive models and dashboards."
+            },
+            {
+              title: "Junior Developer",
+              company: "Software Company",
+              duration: "2022-2023",
+              description: "Developed full-stack web applications using modern frameworks and best practices."
+            }
+          ];
+          localStorage.setItem('experiences', JSON.stringify(sampleExperiences));
+        }
+
+        if (!localStorage.getItem('projects')) {
+          const sampleProjects = [
+            {
+              name: "Data Analysis Dashboard",
+              description: "Interactive dashboard for analyzing business metrics using Python and visualization libraries.",
+              live: "https://example.com",
+              github: "https://github.com"
+            },
+            {
+              name: "Machine Learning Model",
+              description: "Predictive model for classification tasks with 95% accuracy on test data.",
+              live: "",
+              github: "https://github.com"
+            },
+            {
+              name: "Portfolio Website",
+              description: "Personal portfolio built with HTML, CSS, JavaScript, and Tailwind CSS with admin panel.",
+              live: "https://shreyachavn-collab.github.io/portfolio/",
+              github: "https://github.com/shreyachavn-collab/portfolio"
+            }
+          ];
+          localStorage.setItem('projects', JSON.stringify(sampleProjects));
+        }
+
+        if (!localStorage.getItem('socialData')) {
+          const sampleSocial = {
+            github: "https://github.com/shreyachavn-collab",
+            linkedin: "https://linkedin.com/in/shreyachavan",
+            twitter: "https://twitter.com/shreyachavan",
+            instagram: "https://instagram.com/shreyachavan",
+            email: "shreya@example.com"
+          };
+          localStorage.setItem('socialData', JSON.stringify(sampleSocial));
+        }
+
+        if (!localStorage.getItem('aboutData')) {
+          const sampleAbout = {
+            fullName: "Shreya Chavan",
+            title: "Data Science Enthusiast",
+            bio: "Passionate data scientist with a strong foundation in computer science, currently pursuing MSc in Data Science.",
+            location: "India",
+            photo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%236366f1' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='48' fill='white' text-anchor='middle' dy='.3em' font-family='system-ui'%3ESC%3C/text%3E%3C/svg%3E"
+          };
+          localStorage.setItem('aboutData', JSON.stringify(sampleAbout));
+        }
+
+        if (!localStorage.getItem('resumeData')) {
+          const sampleResume = {
+            text: "Data Science Enthusiast\n\nProfessional Summary\nHighly motivated data scientist with a passion for analyzing complex datasets and building intelligent solutions. Strong foundation in computer science with expertise in machine learning, statistical analysis, and data visualization.\n\nTechnical Skills\nProgramming: Python, SQL, JavaScript\nMachine Learning: Scikit-learn, TensorFlow, Pandas\nData Visualization: Matplotlib, Plotly, Tableau\nDatabases: MySQL, PostgreSQL, MongoDB\n\nEducation\nMSc Data Science — University (2023-Present)\nBSc Computer Science — University (2020-2023)\n\nExperience\nData Science Intern — Tech Company (2023-Present)\nJunior Developer — Software Company (2022-2023)"
+          };
+          localStorage.setItem('resumeData', JSON.stringify(sampleResume));
+        }
+      }
+
       // Load all portfolio data from localStorage
       document.addEventListener('DOMContentLoaded', function () {
+        initializeSampleData();
         // Load profile photo
         const aboutData = JSON.parse(localStorage.getItem('aboutData') || '{}');
         if (aboutData.photo) {
