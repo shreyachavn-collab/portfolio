@@ -2,13 +2,33 @@ import json
 import traceback
 from django.http import JsonResponse, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
+from django.core.management import call_command
+from django.db.utils import OperationalError
 from .models import PortfolioData
 
 
 def get_single_instance():
-    obj = PortfolioData.objects.first()
+    try:
+        obj = PortfolioData.objects.first()
+    except OperationalError:
+        # Database/table missing — try to run migrations and retry once.
+        try:
+            call_command('migrate', '--noinput')
+        except Exception:
+            # If migrate fails, return a transient in-memory default instance
+            return PortfolioData()
+        try:
+            obj = PortfolioData.objects.first()
+        except Exception:
+            return PortfolioData()
+
     if not obj:
-        obj = PortfolioData.objects.create()
+        try:
+            obj = PortfolioData.objects.create()
+        except Exception:
+            # If creation fails (e.g., migrations still missing), return transient object
+            return PortfolioData()
+
     return obj
 
 
