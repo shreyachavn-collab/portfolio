@@ -1,0 +1,1 @@
+﻿{"serviceDetails":{"envSpecificDetails":{"startCommand":"gunicorn portfolio_backend.wsgi --preload --bind 0.0.0.0:$PORT"},"releaseCommand":"python manage.py migrate --noinput \u0026\u0026 python manage.py collectstatic --noinput"}}
