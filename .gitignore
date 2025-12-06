@@ -1,0 +1,11 @@
+# Ignore local Python environment and SQLite DB
+backend_django/.venv/
+backend_django/db.sqlite3
+
+# Node artifacts (if any)
+node_modules/
+
+# Editor files
+.vscode/
+*.pyc
+__pycache__/
