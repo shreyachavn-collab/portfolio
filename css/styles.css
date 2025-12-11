@@ -24,36 +24,96 @@ header, main, footer{max-width:72rem;margin:0 auto;padding:1.25rem}
 
 /* Cards and panels */
 .bg-white{background:var(--card) !important; color:var(--text) !important}
-.input{width:100%;padding:.6rem;border:1px solid rgba(255,255,255,0.06);border-radius:.375rem;background:transparent;color:var(--text)}
+.input{width:100%;padding:.6rem;border:1px solid rgba(255,255,255,0.06);border-radius:.375rem;background:transparent;color:var(--text);transition:all 0.2s ease}
+.input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99, 102, 241, 0.1)}
 .input::placeholder{color:rgba(230,238,248,0.4)}
-.btn-primary{background:linear-gradient(90deg,var(--accent),#5b21b6);color:#fff;padding:.6rem .85rem;border-radius:.375rem;border:none;font-weight:600}
-.btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:.55rem .8rem;border-radius:.375rem;color:var(--text)}
 
-/* headings stronger */
-h1,h2{font-weight:700;color:var(--text)}
-h1{font-size:2.1rem}
-h2{font-size:1.5rem}
+/* Typography enhancements */
+h1,h2,h3,h4{font-weight:700;color:var(--text)}
+h1{font-size:2.5rem;line-height:1.2;margin-bottom:1rem}
+h2{font-size:2rem;margin-bottom:1.5rem}
+h3{font-size:1.5rem}
 
-/* links */
-a{color:var(--accent-2)}
-a:hover{color:var(--accent)}
+/* Links */
+a{color:#6366f1;text-decoration:none;transition:color 0.2s ease}
+a:hover{color:#8b5cf6}
 
-/* small animation helpers */
-.fade-in{animation:fadeIn .45s ease both}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* input groups and responsive tweaks */
-@media (max-width:640px){
-  header{padding:1rem}
-  h1{font-size:1.8rem}
+/* Smooth animations */
+.animate__animated{
+  animation-duration: 0.6s;
+  animation-fill-mode: both;
 }
 
-/* Top navigation */
-.top-nav{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:1rem}
-.nav-link{color:var(--muted);font-weight:600;padding:.4rem .55rem;border-radius:.375rem;text-decoration:none}
-.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.02)}
-.nav-link.active{color:var(--accent);background:linear-gradient(90deg,rgba(124,58,237,0.12),rgba(96,165,250,0.06))}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* Ensure header and nav spacing */
-header{display:flex;align-items:center;padding:1rem 0}
+/* Responsive design */
+@media (max-width:640px){
+  .top-nav{padding:0.75rem 1rem;flex-direction:column;gap:0.5rem}
+  h1{font-size:2rem}
+  h2{font-size:1.5rem}
+  main{padding:1rem}
+}
+
+/* Top navigation - sticky and enhanced */
+.top-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0.75rem 1.5rem;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  gap:1rem;
+  background:rgba(11, 18, 32, 0.95);
+  backdrop-filter:blur(10px);
+  box-shadow:0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.nav-link{
+  color:var(--muted);
+  font-weight:600;
+  padding:.55rem .8rem;
+  border-radius:.375rem;
+  text-decoration:none;
+  transition:all 0.3s ease;
+}
+.nav-link:hover{
+  color:var(--text);
+  background:rgba(99, 102, 241, 0.15);
+  transform:translateY(-2px);
+}
+.nav-link.active{
+  color:#6366f1;
+  background:rgba(99, 102, 241, 0.2);
+  border-bottom:2px solid #6366f1;
+}
+
+/* Button styles */
+.btn-primary{
+  background:linear-gradient(135deg, #6366f1, #8b5cf6);
+  color:#fff;
+  padding:.7rem 1.2rem;
+  border-radius:.5rem;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 4px 12px rgba(99, 102, 241, 0.3);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(99, 102, 241, 0.4);
+}
+.btn-outline{
+  background:transparent;
+  border:1px solid rgba(99, 102, 241, 0.4);
+  padding:.6rem .9rem;
+  border-radius:.5rem;
+  color:#6366f1;
+  cursor:pointer;
+  font-weight:600;
+  transition:all 0.3s ease;
+}
+.btn-outline:hover{
+  background:rgba(99, 102, 241, 0.1);
+  border-color:#6366f1;
+  transform:translateY(-2px);
+}
 

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body class="leading-relaxed">
-    <nav class="top-nav flex items-center justify-between">
+    <nav class="top-nav flex items-center justify-between sticky top-0 z-50">
       <div class="flex items-center gap-4">
         <a href="#top" class="nav-link">Home</a>
         <a href="#projects" class="nav-link">Projects</a>
@@ -23,44 +23,74 @@
       </div>
     </nav>
 
-    <header id="top" class="flex items-center gap-6">
-      <img id="profilePic" src="assets/profile.svg" alt="profile" class="w-28 h-28 rounded-full border-4 border-indigo-200 animate__animated animate__fadeIn" />
-      <div>
-        <h1 id="name" class="animate__animated animate__fadeInUp">Shreya Chavan</h1>
-        <p id="title" class="mt-1 text-sm" style="color:var(--muted)">BSc Computer Science · MSc (Data Science) — Fresher</p>
-        <div class="mt-2 flex gap-3" id="socialLinks"></div>
+    <!-- Hero Section -->
+    <header id="top" class="min-h-screen flex items-center justify-center text-center py-20 relative overflow-hidden">
+      <!-- Background gradient -->
+      <div class="absolute inset-0 -z-10" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);"></div>
+      
+      <div class="max-w-2xl mx-auto px-6">
+        <img id="profilePic" src="assets/profile.svg" alt="profile" class="w-40 h-40 rounded-full border-4 border-indigo-300 shadow-2xl mx-auto mb-8 animate__animated animate__bounceIn" />
+        
+        <div class="animate__animated animate__fadeInUp">
+          <h1 id="name" class="text-5xl md:text-6xl font-black mb-4" style="background: linear-gradient(135deg, #00d4ff, #0099ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Shreya Chavan</h1>
+          <p id="title" class="text-xl md:text-2xl mb-6" style="color:var(--muted)">BSc Computer Science · MSc (Data Science) — Fresher</p>
+          <p class="text-base mb-8 max-w-xl mx-auto leading-relaxed" style="color:var(--text)">Passionate about data science, machine learning, and building intelligent solutions. Exploring new technologies and creating impactful projects.</p>
+          
+          <!-- Social Links -->
+          <div class="flex justify-center gap-4 mb-10" id="socialLinks"></div>
+          
+          <!-- CTA Buttons -->
+          <div class="flex justify-center gap-4 flex-wrap">
+            <a href="#projects" class="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105">View Projects</a>
+            <a href="#resume" class="px-8 py-3 border-2 border-indigo-600 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition-all duration-300">Download Resume</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate__animated animate__bounce">
+        <svg class="w-6 h-6" style="color:var(--muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
       </div>
     </header>
 
-    <main class="space-y-8">
-      <section id="about" class="bg-white p-6 rounded-lg shadow animate__animated animate__zoomIn">
-        <h2 class="text-2xl font-semibold mb-2">About</h2>
-        <p id="bio"></p>
+    <main class="max-w-4xl mx-auto px-6 py-16 space-y-12">
+      <section id="about" class="group">
+        <h2 class="text-3xl font-bold mb-6 pb-3 border-b-2 border-indigo-600">About</h2>
+        <div class="p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" style="background: linear-gradient(135deg, #0f1724 0%, #1a2332 100%); border: 1px solid rgba(99, 102, 241, 0.2);">
+          <p id="bio" class="text-lg leading-relaxed"></p>
+        </div>
       </section>
 
-      <section id="experience" class="bg-white p-6 rounded-lg shadow animate__animated animate__fadeInUp">
-        <h2 class="text-2xl font-semibold mb-4">Experience</h2>
-        <div id="experienceList" class="space-y-3"></div>
+      <section id="experience" class="group">
+        <h2 class="text-3xl font-bold mb-6 pb-3 border-b-2 border-indigo-600">Experience</h2>
+        <div id="experienceList" class="space-y-4"></div>
       </section>
 
-      <section id="projects" class="bg-white p-6 rounded-lg shadow animate__animated animate__fadeInUp">
-        <h2 class="text-2xl font-semibold mb-4">Projects</h2>
-        <div id="projectsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      <section id="projects" class="group">
+        <h2 class="text-3xl font-bold mb-6 pb-3 border-b-2 border-indigo-600">Projects</h2>
+        <div id="projectsList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
       </section>
 
-      <section id="skills" class="bg-white p-6 rounded-lg shadow animate__animated animate__fadeInUp">
-        <h2 class="text-2xl font-semibold mb-3">Skills</h2>
-        <div id="skillsList" class="flex flex-wrap gap-2"></div>
+      <section id="skills" class="group">
+        <h2 class="text-3xl font-bold mb-6 pb-3 border-b-2 border-indigo-600">Skills & Technologies</h2>
+        <div id="skillsList" class="flex flex-wrap gap-3"></div>
       </section>
 
-      <section id="certifications" class="bg-white p-6 rounded-lg shadow animate__animated animate__fadeInUp">
-        <h2 class="text-2xl font-semibold mb-3">Certifications</h2>
-        <ul id="certificationsList" class="list-disc pl-5"></ul>
+      <section id="certifications" class="group">
+        <h2 class="text-3xl font-bold mb-6 pb-3 border-b-2 border-indigo-600">Certifications & Awards</h2>
+        <ul id="certificationsList" class="space-y-3"></ul>
       </section>
 
-      <section id="resume" class="bg-white p-6 rounded-lg shadow animate__animated animate__fadeInUp">
-        <h2 class="text-2xl font-semibold mb-3">Resume</h2>
-        <a id="resumeLink" class="text-indigo-600 underline" href="#" target="_blank">Download/View Resume</a>
+      <section id="resume" class="group">
+        <h2 class="text-3xl font-bold mb-6 pb-3 border-b-2 border-indigo-600">Resume</h2>
+        <div class="p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300" style="background: linear-gradient(135deg, #0f1724 0%, #1a2332 100%); border: 1px solid rgba(99, 102, 241, 0.2);">
+          <a id="resumeLink" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105" href="#" target="_blank">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Download / View Resume
+          </a>
+        </div>
       </section>
     </main>
 
