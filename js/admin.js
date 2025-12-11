@@ -194,7 +194,12 @@
       localStorage.setItem('gistToken', token);
 
       const data = loadLocal();
-      const gistId = gistIdEl.value.trim();
+      let gistId = gistIdEl.value.trim();
+      // Gist IDs are 32-char alphanumeric strings; if not valid, treat as empty (create new)
+      if(gistId && !/^[a-f0-9]{32}$/.test(gistId)){
+        gistId = '';
+        gistIdEl.value = '';
+      }
       statusEl.textContent = 'Saving to gist...';
 
       try {
@@ -238,8 +243,12 @@
 
     el('syncLoadGist').addEventListener('click', async ()=>{
       const token = tokenEl.value.trim();
-      const gistId = gistIdEl.value.trim();
-      if(!token || !gistId){ alert('Please enter both token and gist ID'); return; }
+      let gistId = gistIdEl.value.trim();
+      // Gist IDs are 32-char alphanumeric strings; if not valid, reject
+      if(!token || !gistId || !/^[a-f0-9]{32}$/.test(gistId)){ 
+        alert('Please enter both a valid GitHub token and a valid gist ID (32 hex characters)'); 
+        return; 
+      }
       localStorage.setItem('gistToken', token);
 
       statusEl.textContent = 'Loading from gist...';
