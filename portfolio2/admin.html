@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin — Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+  <div class="p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold">Admin Panel — Portfolio</h1>
+        <a href="index.html" class="btn-outline">Back to Portfolio</a>
+      </div>
+      <p class="mb-4 text-sm" style="color:var(--muted)">Edit content here. Changes are saved to your browser's localStorage.</p>
+
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">About</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium">Name</label>
+            <input id="about_name" class="mt-1 input" />
+            <label class="block text-sm font-medium mt-2">Title</label>
+            <input id="about_title" class="mt-1 input" />
+            <label class="block text-sm font-medium mt-2">Bio</label>
+            <textarea id="about_bio" class="mt-1 input h-24"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Profile Picture</label>
+            <img id="previewPic" src="assets/profile.svg" class="w-40 h-40 rounded-full border mt-2" alt="preview" />
+            <input id="profileUpload" type="file" accept="image/*" class="mt-2" />
+            <p class="text-xs text-gray-500 mt-2">Uploading saves a data URL in localStorage. Use small images for performance.</p>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button id="saveAbout" class="btn-primary">Save About</button>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">Experience</h2>
+        <div id="experienceControls" class="space-y-2"></div>
+        <button id="addExperience" class="btn-outline mt-3">Add Experience</button>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">Projects</h2>
+        <div id="projectsControls" class="space-y-2"></div>
+        <button id="addProject" class="btn-outline mt-3">Add Project</button>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">Skills (comma separated)</h2>
+        <input id="skillsInput" class="mt-1 input" />
+        <div class="mt-3">
+          <button id="saveSkills" class="btn-primary">Save Skills</button>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">Certifications</h2>
+        <div id="certificationsControls" class="space-y-2"></div>
+        <button id="addCertification" class="btn-outline mt-3">Add Certification</button>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">Socials</h2>
+        <label class="block text-sm mt-2">LinkedIn</label>
+        <input id="social_linkedin" class="mt-1 input" />
+        <label class="block text-sm mt-2">GitHub</label>
+        <input id="social_github" class="mt-1 input" />
+        <label class="block text-sm mt-2">Instagram</label>
+        <input id="social_instagram" class="mt-1 input" />
+        <label class="block text-sm mt-2">Twitter</label>
+        <input id="social_twitter" class="mt-1 input" />
+        <div class="mt-3"><button id="saveSocials" class="btn-primary">Save Socials</button></div>
+      </div>
+
+      <div class="mt-6 text-sm text-gray-600">Open `index.html` to view the public page. Use your browser's inspector/localStorage to backup data if needed.</div>
+    </div>
+
+    <script src="data/defaultData.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>
