@@ -176,12 +176,101 @@
     }
   }
 
+  // Gist Sync
+  function initGistSync(){
+    const tokenEl = el('gistToken');
+    const gistIdEl = el('gistId');
+    const statusEl = el('syncStatus');
+
+    // Load token & gist ID from localStorage
+    const savedToken = localStorage.getItem('gistToken');
+    const savedGistId = localStorage.getItem('gistId');
+    if(savedToken) tokenEl.value = savedToken;
+    if(savedGistId) gistIdEl.value = savedGistId;
+
+    el('syncSaveGist').addEventListener('click', async ()=>{
+      const token = tokenEl.value.trim();
+      if(!token){ alert('Please enter a GitHub token'); return; }
+      localStorage.setItem('gistToken', token);
+
+      const data = loadLocal();
+      const gistId = gistIdEl.value.trim();
+      statusEl.textContent = 'Saving to gist...';
+
+      try {
+        let url = 'https://api.github.com/gists';
+        let method = 'POST';
+        let body = {
+          description: 'Portfolio Data Sync',
+          public: false,
+          files: {
+            'portfolio-data.json': { content: JSON.stringify(data, null, 2) }
+          }
+        };
+
+        if(gistId){
+          url += '/' + gistId;
+          method = 'PATCH';
+        }
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' },
+          body: JSON.stringify(body)
+        });
+
+        if(!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const resData = await res.json();
+        const newGistId = resData.id;
+
+        if(!gistId){
+          gistIdEl.value = newGistId;
+          localStorage.setItem('gistId', newGistId);
+          statusEl.textContent = `✓ Gist created: ${newGistId}`;
+        } else {
+          statusEl.textContent = '✓ Gist updated';
+        }
+      } catch(err){
+        console.error('Gist save error:', err);
+        statusEl.textContent = `✗ Error: ${err.message}`;
+      }
+    });
+
+    el('syncLoadGist').addEventListener('click', async ()=>{
+      const token = tokenEl.value.trim();
+      const gistId = gistIdEl.value.trim();
+      if(!token || !gistId){ alert('Please enter both token and gist ID'); return; }
+      localStorage.setItem('gistToken', token);
+
+      statusEl.textContent = 'Loading from gist...';
+      try {
+        const res = await fetch('https://api.github.com/gists/' + gistId, {
+          headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' }
+        });
+
+        if(!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const resData = await res.json();
+        const file = resData.files['portfolio-data.json'];
+        if(!file) throw new Error('portfolio-data.json not found in gist');
+
+        const remoteData = JSON.parse(file.content);
+        localStorage.setItem(KEY, JSON.stringify(remoteData));
+        renderControls();
+        statusEl.textContent = '✓ Data loaded from gist';
+      } catch(err){
+        console.error('Gist load error:', err);
+        statusEl.textContent = `✗ Error: ${err.message}`;
+      }
+    });
+  }
+
   // boot
   document.addEventListener('DOMContentLoaded', ()=>{
     try {
       console.log('Admin panel initializing...');
       renderControls();
       bindAbout();
+      initGistSync();
       console.log('Admin panel initialized');
     } catch (err) {
       console.error('Admin initialization error:', err);

@@ -78,6 +78,20 @@
         <div class="mt-3"><button id="saveSocials" class="btn-primary">Save Socials</button></div>
       </div>
 
+      <div class="bg-white p-4 rounded shadow mb-4">
+        <h2 class="font-semibold mb-2">Sync Across Devices (GitHub Gist)</h2>
+        <p class="text-sm mb-3" style="color:var(--muted)">Create a GitHub personal access token with 'gist' scope to sync data across devices.</p>
+        <label class="block text-sm font-medium">GitHub Token (gist scope)</label>
+        <input id="gistToken" class="mt-1 input" type="password" placeholder="ghp_..." />
+        <label class="block text-sm font-medium mt-2">Gist ID (auto-created if empty)</label>
+        <input id="gistId" class="mt-1 input" placeholder="Leave empty to create a new gist" />
+        <div class="mt-3 flex gap-2 flex-wrap">
+          <button id="syncSaveGist" class="btn-primary">Save to Gist</button>
+          <button id="syncLoadGist" class="btn-outline">Load from Gist</button>
+        </div>
+        <p id="syncStatus" class="text-xs mt-2" style="color:var(--muted)"></p>
+      </div>
+
       <div class="mt-6 text-sm text-gray-600">Open `index.html` to view the public page. Use your browser's inspector/localStorage to backup data if needed.</div>
     </div>
 
